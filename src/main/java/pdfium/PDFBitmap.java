@@ -4,6 +4,7 @@ import com.sun.jna.Pointer;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.nio.ByteOrder;
 
 
 public class PDFBitmap implements AutoCloseable {
@@ -44,21 +45,13 @@ public class PDFBitmap implements AutoCloseable {
         this.pdfium.FPDF_RenderPageBitmap(this.handler,page.handler,0,0,getWidth(),getHeight(),0,0);
     }
 
+
     public BufferedImage toBufferedImage(){
         int w = getWidth(), h = getHeight();
         BufferedImage bufferedImage = new BufferedImage(w,h,BufferedImage.TYPE_4BYTE_ABGR);
         int pixelCount = w*h;
         Pointer buffer = this.pdfium.FPDFBitmap_GetBuffer(this.handler);
-        byte[] data = buffer.getByteArray(0,pixelCount*4);
-        int[] rgbaArray = new int[pixelCount];
-        int j = 0;
-        for(int i = 0; i<data.length; i+=4){
-            byte r = data[i+2];
-            byte g = data[i+1];
-            byte b = data[i];
-            byte a = data[i+3];
-            rgbaArray[j++] = (b & 0xFF) + ((g & 0xFF) << 8) + ((r & 0xFF) << 16) + ((a & 0xFF) << 24);
-        }
+        int[] rgbaArray = buffer.getIntArray(0,pixelCount);
         bufferedImage.setRGB(0,0,w,h,rgbaArray,0,w);
         return bufferedImage;
     }

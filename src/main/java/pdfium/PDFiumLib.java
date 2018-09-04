@@ -5,6 +5,14 @@ import com.sun.jna.Pointer;
 import com.sun.jna.ptr.PointerByReference;
 
 public interface PDFiumLib extends Library {
+    enum FPDFBitmap_format {
+        DefaultNotUse,
+        FPDFBitmap_Gray,
+        FPDFBitmap_BGR,
+        FPDFBitmap_BGRx,
+        FPDFBitmap_BGRA
+    }
+
     Pointer FPDF_LoadDocument(String file_path, String password);
     void FPDF_CloseDocument (Pointer doc);
     Integer FPDF_GetPageCount(Pointer doc);
@@ -16,6 +24,7 @@ public interface PDFiumLib extends Library {
     Double FPDF_GetPageHeight(Pointer page);
     Double FPDF_GetPageWidth(Pointer page);
     Pointer FPDFBitmap_Create(int width, int height, Boolean hasAlpha);
+    Pointer FPDFBitmap_CreateEx(int width, int height, int format, Pointer first_scan, int stride);
     void FPDFBitmap_Destroy(Pointer bitmap);
     int FPDFBitmap_GetHeight(Pointer bitmap);
     int FPDFBitmap_GetWidth(Pointer bitmap);
